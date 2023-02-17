@@ -1,55 +1,39 @@
-// src/components/RequestForm.js
+import React, { useState, useEffect } from 'react';
 
-import React, { useState } from 'react';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
+const RequestForm = () => {
+  const [song, setSong] = useState('');
+  const [artist, setArtist] = useState('');
+  const [message, setMessage] = useState('');
+  const [disabled, setDisabled] = useState(false);
 
+  const handleSongChange = (e) => {
+    setSong(e.target.value);
+  }
 
-const RequestForm = () => {}
-    const [name, setName] = useState('');
-    const [song, setSong] = useState('');
-    const [error, setError] = useState('');
+  const handleArtistChange = (e) => {
+    setArtist(e.target.value);
+  }
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
+    //Send API request to submit user request
+  }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const blockedSongRef = firebase.firestore().collection('blockedSongs');
-        const blockedSongsSnapshot = await blockedSongRef.where('song', '==', song).get();
-        const blockedSong = blockedSongsSnapshot.docs[0];
-
-        if (blockedSong){
-            const blockedSongData = blockedSong.data();
-            const minutesAgo = Math.floor((Date.now() - blockedSongData.timestamp.toDate().getTime()) / 60000);
-
-            if (minutesAgo < 30) {
-                setError('Alaye I just play this song recently o!');
-                return;
-            }
-        }
-        const requestsRef = firebase.firestore().collection('requests');
-    await requestsRef.add({
-      name,
-      email,
-      phone,
-      song,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    await blockedSongsRef.doc().set({
-      song,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    });
-
-    setName('');
-    setEmail('');
-    setPhone('');
-    setSong('');
-  };
+  useEffect(() => {
+    //Check local storage for user's last request timestamp
+    //Check API for last 30 minutes song list
+    //Disable form submit button if needed
+  }, []);
 
   return (
-    <div>
-      <h2>Request a Song</h2>
-      <form onSubmit={handleSubmit}></form>
-    </div>
-     )
+    <form onSubmit={handleSubmit}>
+      <input type="text" value={song} onchange={handleSongChange} />
+      <input type="text" value={artist} onchange={handleArtistChange} />
+      <button type="submit" disabled={disabled}>Submit</button>
+      <p>{message}</p>
+    </form>
+  )
+}
+
+export default RequestForm
